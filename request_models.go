@@ -48,3 +48,13 @@ type ReqDeleteSite struct {
 	Database bool
 	Path     bool
 }
+
+// 获取网站备份列表
+// URI 地址：/data?action=getData&table=backup
+type ReqSiteBackups struct {
+	P      int64
+	Limit  int64 // 必填
+	Type   int64 // 必不填或填0
+	ToJS   string
+	Search int64 // 必填
+}

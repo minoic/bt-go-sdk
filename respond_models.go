@@ -120,3 +120,32 @@ type RespMSG struct {
 	Status bool   `json:"status"`
 	Msg    string `json:"msg"`
 }
+
+// 获取网站备份列表
+// URI 地址：/data?action=getData&table=backup
+type RespSiteBackups struct {
+	Data []struct {
+		Name     string `json:"name"`
+		Addtime  string `json:"addtime"`
+		Pid      int    `json:"pid"`
+		Filename string `json:"filename"`
+		ID       int    `json:"id"`
+		Size     int    `json:"size"`
+	} `json:"data"`
+	Where string `json:"where"`
+	Page  string `json:"page"`
+}
+
+// 获取网站的域名列表
+// URI 地址：/data?action=getData&table=domain
+type SiteDomains []struct {
+	Port    int    `json:"port"`
+	Addtime string `json:"addtime"`
+	Pid     int    `json:"pid"`
+	ID      int    `json:"id"`
+	Name    string `json:"name"`
+}
+
+type RewriteList struct {
+	Rewrites []string `json:"rewrite"`
+}

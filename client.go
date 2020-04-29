@@ -54,7 +54,7 @@ func (this *Client) btAPI(data map[string][]string, endpoint string) ([]byte, in
 		fmt.Println(err)
 	}
 	if resp.StatusCode >= 400 {
-		fmt.Println("failed post at ", requestURL.String())
+		fmt.Println(resp.StatusCode, requestURL.String())
 	}
 	this.cookies = resp.Cookies()
 	respBody, _ := ioutil.ReadAll(resp.Body)
@@ -127,9 +127,9 @@ func (this *Client) GetUpdateStatus(check bool, force bool) (UpdateStatus, error
 
 func (this *Client) GetSites(params *ReqSites) (RespSites, error) {
 	data := map[string][]string{
-		"p":      {strconv.FormatInt(params.P, 1)},
-		"limit":  {strconv.FormatInt(params.Limit, 15)},
-		"type":   {strconv.FormatInt(params.Type, -1)},
+		"p":      {strconv.FormatInt(params.P, 10)},
+		"limit":  {strconv.FormatInt(params.Limit, 10)},
+		"type":   {strconv.FormatInt(params.Type, 10)},
 		"order":  {params.Order},
 		"tojs":   {params.ToJS},
 		"search": {params.Search},
@@ -153,10 +153,10 @@ func (this *Client) AddSite(params *ReqAddSite) (RespAddSite, error) {
 	data := map[string][]string{
 		"webname":      {string(webname)},
 		"path":         {params.Path},
-		"type_id":      {strconv.FormatInt(params.TypeID, 0)},
+		"type_id":      {strconv.FormatInt(params.TypeID, 10)},
 		"type":         {params.Type},
-		"version":      {strconv.FormatInt(params.Version, 72)},
-		"port":         {strconv.FormatInt(params.Port, 80)},
+		"version":      {strconv.FormatInt(params.Version, 10)},
+		"port":         {strconv.FormatInt(params.Port, 10)},
 		"ps":           {params.PS},
 		"ftp":          {strconv.FormatBool(params.FTP)},
 		"ftp_username": {params.FTPUserName},
@@ -179,7 +179,7 @@ func (this *Client) AddSite(params *ReqAddSite) (RespAddSite, error) {
 
 func (this *Client) DeleteSite(params *ReqDeleteSite) (RespMSG, error) {
 	data := map[string][]string{
-		"id":      {strconv.FormatInt(params.ID, 0)},
+		"id":      {strconv.FormatInt(params.ID, 10)},
 		"webname": {params.WebName},
 	}
 	if params.FTP {
@@ -201,7 +201,7 @@ func (this *Client) DeleteSite(params *ReqDeleteSite) (RespMSG, error) {
 
 func (this *Client) StopSite(id int64, name string) (RespMSG, error) {
 	data := map[string][]string{
-		"id":   {strconv.FormatInt(id, 0)},
+		"id":   {strconv.FormatInt(id, 10)},
 		"name": {name},
 	}
 	resp, _ := this.btAPI(data, "/site?action=SiteStop")
@@ -214,7 +214,7 @@ func (this *Client) StopSite(id int64, name string) (RespMSG, error) {
 
 func (this *Client) StartSite(id int64, name string) (RespMSG, error) {
 	data := map[string][]string{
-		"id":   {strconv.FormatInt(id, 0)},
+		"id":   {strconv.FormatInt(id, 10)},
 		"name": {name},
 	}
 	resp, _ := this.btAPI(data, "/site?action=SiteStart")
@@ -227,7 +227,7 @@ func (this *Client) StartSite(id int64, name string) (RespMSG, error) {
 
 func (this *Client) SetSiteEdate(id int64, edate string) (RespMSG, error) {
 	data := map[string][]string{
-		"id":    {strconv.FormatInt(id, 0)},
+		"id":    {strconv.FormatInt(id, 10)},
 		"edate": {edate},
 	}
 	resp, _ := this.btAPI(data, "/site?action=SetEdate")
@@ -240,13 +240,117 @@ func (this *Client) SetSiteEdate(id int64, edate string) (RespMSG, error) {
 
 func (this *Client) SetSitePS(id int64, ps string) (RespMSG, error) {
 	data := map[string][]string{
-		"id": {strconv.FormatInt(id, 0)},
+		"id": {strconv.FormatInt(id, 10)},
 		"ps": {ps},
 	}
 	resp, _ := this.btAPI(data, "/data?action=setPs&table=sites")
 	var dec RespMSG
 	if err := json.Unmarshal(resp, &dec); err != nil {
 		return RespMSG{}, err
+	}
+	return dec, nil
+}
+
+func (this *Client) GetSiteBackups(params *ReqSiteBackups) (RespSiteBackups, error) {
+	data := map[string][]string{
+		"p":      {strconv.FormatInt(params.P, 10)},
+		"limit":  {strconv.FormatInt(params.Limit, 10)},
+		"type":   {strconv.FormatInt(params.Type, 10)},
+		"tojs":   {params.ToJS},
+		"search": {strconv.FormatInt(params.Search, 10)},
+	}
+	resp, status := this.btAPI(data, "/data?action=getData&table=backup")
+	// fmt.Println(string(resp))
+	if status >= 400 {
+		return RespSiteBackups{}, errors.New(string(resp))
+	}
+	var dec RespSiteBackups
+	if err := json.Unmarshal(resp, &dec); err != nil {
+		return RespSiteBackups{}, err
+	}
+	return dec, nil
+}
+
+func (this *Client) SiteBackup(id int64) (RespMSG, error) {
+	data := map[string][]string{
+		"id": {strconv.FormatInt(id, 10)},
+	}
+	resp, _ := this.btAPI(data, "/site?action=ToBackup")
+	var dec RespMSG
+	if err := json.Unmarshal(resp, &dec); err != nil {
+		return RespMSG{}, err
+	}
+	return dec, nil
+}
+
+func (this *Client) DeleteSiteBackup(id int64) (RespMSG, error) {
+	data := map[string][]string{
+		"id": {strconv.FormatInt(id, 10)},
+	}
+	resp, _ := this.btAPI(data, "/site?action=DelBackup")
+	var dec RespMSG
+	if err := json.Unmarshal(resp, &dec); err != nil {
+		return RespMSG{}, err
+	}
+	return dec, nil
+}
+
+func (this *Client) GetSiteDomains(search int64) (SiteDomains, error) {
+	data := map[string][]string{
+		"search": {strconv.FormatInt(search, 10)},
+		"list":   {"true"},
+	}
+	resp, status := this.btAPI(data, "/data?action=getData&table=domain")
+	if status >= 400 {
+		return SiteDomains{}, errors.New(string(resp))
+	}
+	var dec SiteDomains
+	if err := json.Unmarshal(resp, &dec); err != nil {
+		return SiteDomains{}, err
+	}
+	return dec, nil
+}
+
+func (this *Client) AddDomain(id int64, webname string, domain string) (RespMSG, error) {
+	data := map[string][]string{
+		"id":      {strconv.FormatInt(id, 10)},
+		"webname": {webname},
+		"domain":  {domain},
+	}
+	resp, _ := this.btAPI(data, "/site?action=AddDomain")
+	var dec RespMSG
+	if err := json.Unmarshal(resp, &dec); err != nil {
+		return RespMSG{}, err
+	}
+	return dec, nil
+}
+
+func (this *Client) DelDomain(id int64, webname string, domain string, port int64) (RespMSG, error) {
+	data := map[string][]string{
+		"id":      {strconv.FormatInt(id, 10)},
+		"webname": {webname},
+		"domain":  {domain},
+		"port":    {strconv.FormatInt(port, 10)},
+	}
+	resp, _ := this.btAPI(data, "/site?action=DelDomain")
+	var dec RespMSG
+	if err := json.Unmarshal(resp, &dec); err != nil {
+		return RespMSG{}, err
+	}
+	return dec, nil
+}
+
+func (this *Client) GetRewriteList(siteName string) (RewriteList, error) {
+	data := map[string][]string{
+		"siteName": {siteName},
+	}
+	resp, status := this.btAPI(data, "/site?action=GetRewriteList")
+	if status >= 400 {
+		return RewriteList{}, errors.New(string(resp))
+	}
+	var dec RewriteList
+	if err := json.Unmarshal(resp, &dec); err != nil {
+		return RewriteList{}, err
 	}
 	return dec, nil
 }
