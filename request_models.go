@@ -8,11 +8,43 @@ package bt_go_sdk
 // 获取网站列表
 // URI 地址：/data?action=getData&table=sites
 type ReqSites struct {
-	P int64
-	Limit int64 // 必填
-	Type int64
-	Order string
-	ToJS string
+	P      int64
+	Limit  int64 // 必填
+	Type   int64
+	Order  string
+	ToJS   string
 	Search string
 }
 
+// 创建网站
+// URI 地址：/site?action=AddSite
+type ReqAddSite struct {
+	WebName struct {
+		Domain     string   `json:"domain"`     // 必填
+		DomainList []string `json:"domainlist"` // 必填
+		Count      int      `json:"count"`      // 必填
+	}
+	Path         string // 必填
+	TypeID       int64  // 必填
+	Type         string // 必填
+	Version      int64  // 必填
+	Port         int64  // 必填
+	PS           string // 必填
+	FTP          bool   // 必填
+	FTPUserName  string // FTP 为 true 时 必填
+	FTPPassword  string // FTP 为 true 时 必填
+	SQL          bool   // 必填
+	Codeing      string // SQL 为 true 时 必填
+	DataUser     string // SQL 为 true 时 必填
+	DataPassword string // SQL 为 true 时 必填
+}
+
+// 删除网站
+// URI 地址：/site?action=DeleteSite
+type ReqDeleteSite struct {
+	ID       int64  // 必填
+	WebName  string // 必填
+	FTP      bool
+	Database bool
+	Path     bool
+}

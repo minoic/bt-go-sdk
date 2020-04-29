@@ -1,4 +1,5 @@
 package bt_go_sdk
+
 /*
  相应结构详见本目录的 api-doc.pdf
  或 https://www.bt.cn/api-doc.pdf
@@ -112,4 +113,10 @@ type RespAddSite struct {
 	DatabasePass   string `json:"databasePass"`
 	SiteStatus     bool   `json:"siteStatus"`
 	FtpPass        string `json:"ftpPass"`
+}
+
+// 通用消息结构
+type RespMSG struct {
+	Status bool   `json:"status"`
+	Msg    string `json:"msg"`
 }
