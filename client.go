@@ -109,6 +109,18 @@ func (this *Client) GetTaskCount() int {
 	return dec
 }
 
+func (this *Client) GetPHPVersion() (PHPVersions, error) {
+	resp, status := this.btAPI(map[string][]string{}, "/site?action=GetPHPVersion")
+	if status >= 400 {
+		return PHPVersions{}, errors.New(string(resp))
+	}
+	var dec PHPVersions
+	if err := json.Unmarshal(resp, &dec); err != nil {
+		return PHPVersions{}, err
+	}
+	return dec, nil
+}
+
 func (this *Client) GetUpdateStatus(check bool, force bool) (UpdateStatus, error) {
 	data := map[string][]string{
 		"check": {strconv.FormatBool(check)},
@@ -146,7 +158,8 @@ func (this *Client) GetSites(params *ReqSites) (RespSites, error) {
 }
 
 func (this *Client) AddSite(params *ReqAddSite) (RespAddSite, error) {
-	webname, err := json.Marshal(params)
+	webname, err := json.Marshal(params.WebName)
+	// fmt.Println(string(webname))
 	if err != nil {
 		return RespAddSite{}, err
 	}
