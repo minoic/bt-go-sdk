@@ -61,6 +61,12 @@ func (this *Client) btAPI(data map[string][]string, endpoint string) ([]byte, in
 	return respBody, resp.StatusCode
 }
 
+// Deprecated: Used only for debug
+func (this *Client) Raw(data map[string][]string, endpoint string) ([]byte, int) {
+	return this.btAPI(data, endpoint)
+}
+
+// 获取实时状态信息(CPU、内存、网络、负载)
 func (this *Client) GetNetWork() (NetWork, error) {
 	resp, status := this.btAPI(map[string][]string{}, "/system?action=GetNetWork")
 	if status >= 400 {
@@ -73,6 +79,7 @@ func (this *Client) GetNetWork() (NetWork, error) {
 	return dec, nil
 }
 
+// 获取系统基础统计
 func (this *Client) GetSystemTotal() (SystemTotal, error) {
 	resp, status := this.btAPI(map[string][]string{}, "/system?action=GetSystemTotal")
 	if status >= 400 {
@@ -85,6 +92,7 @@ func (this *Client) GetSystemTotal() (SystemTotal, error) {
 	return dec, nil
 }
 
+// 获取磁盘分区信息
 func (this *Client) GetDiskInfo() (DiskInfo, error) {
 	resp, status := this.btAPI(map[string][]string{}, "/system?action=GetDiskInfo")
 	if status >= 400 {
@@ -97,6 +105,7 @@ func (this *Client) GetDiskInfo() (DiskInfo, error) {
 	return dec, nil
 }
 
+// 检查是否有安装任务
 func (this *Client) GetTaskCount() int {
 	resp, status := this.btAPI(map[string][]string{}, "/ajax?action=GetTaskCount")
 	if status >= 400 {
@@ -109,6 +118,7 @@ func (this *Client) GetTaskCount() int {
 	return dec
 }
 
+// 获取已安装的 PHP 版本列表
 func (this *Client) GetPHPVersion() (PHPVersions, error) {
 	resp, status := this.btAPI(map[string][]string{}, "/site?action=GetPHPVersion")
 	if status >= 400 {
@@ -121,6 +131,7 @@ func (this *Client) GetPHPVersion() (PHPVersions, error) {
 	return dec, nil
 }
 
+// 检查面板更新
 func (this *Client) GetUpdateStatus(check bool, force bool) (UpdateStatus, error) {
 	data := map[string][]string{
 		"check": {strconv.FormatBool(check)},
@@ -137,6 +148,7 @@ func (this *Client) GetUpdateStatus(check bool, force bool) (UpdateStatus, error
 	return dec, nil
 }
 
+// 获取网站列表
 func (this *Client) GetSites(params *ReqSites) (RespSites, error) {
 	data := map[string][]string{
 		"p":      {strconv.FormatInt(params.P, 10)},
@@ -157,6 +169,7 @@ func (this *Client) GetSites(params *ReqSites) (RespSites, error) {
 	return dec, nil
 }
 
+// 创建网站
 func (this *Client) AddSite(params *ReqAddSite) (RespAddSite, error) {
 	webname, err := json.Marshal(params.WebName)
 	// fmt.Println(string(webname))
@@ -190,6 +203,7 @@ func (this *Client) AddSite(params *ReqAddSite) (RespAddSite, error) {
 	return dec, nil
 }
 
+// 删除网站
 func (this *Client) DeleteSite(params *ReqDeleteSite) (RespMSG, error) {
 	data := map[string][]string{
 		"id":      {strconv.FormatInt(params.ID, 10)},
@@ -212,6 +226,7 @@ func (this *Client) DeleteSite(params *ReqDeleteSite) (RespMSG, error) {
 	return dec, nil
 }
 
+// 停止网站
 func (this *Client) StopSite(id int64, name string) (RespMSG, error) {
 	data := map[string][]string{
 		"id":   {strconv.FormatInt(id, 10)},
@@ -225,6 +240,7 @@ func (this *Client) StopSite(id int64, name string) (RespMSG, error) {
 	return dec, nil
 }
 
+// 启动网站
 func (this *Client) StartSite(id int64, name string) (RespMSG, error) {
 	data := map[string][]string{
 		"id":   {strconv.FormatInt(id, 10)},
@@ -238,6 +254,7 @@ func (this *Client) StartSite(id int64, name string) (RespMSG, error) {
 	return dec, nil
 }
 
+// 设置网站过期时间 格式 “0000-00-00”（全 0 为永久）
 func (this *Client) SetSiteEdate(id int64, edate string) (RespMSG, error) {
 	data := map[string][]string{
 		"id":    {strconv.FormatInt(id, 10)},
@@ -251,6 +268,7 @@ func (this *Client) SetSiteEdate(id int64, edate string) (RespMSG, error) {
 	return dec, nil
 }
 
+// 设置网站备注
 func (this *Client) SetSitePS(id int64, ps string) (RespMSG, error) {
 	data := map[string][]string{
 		"id": {strconv.FormatInt(id, 10)},
@@ -264,6 +282,7 @@ func (this *Client) SetSitePS(id int64, ps string) (RespMSG, error) {
 	return dec, nil
 }
 
+// 获取网站备份列表
 func (this *Client) GetSiteBackups(params *ReqSiteBackups) (RespSiteBackups, error) {
 	data := map[string][]string{
 		"p":      {strconv.FormatInt(params.P, 10)},
@@ -284,6 +303,7 @@ func (this *Client) GetSiteBackups(params *ReqSiteBackups) (RespSiteBackups, err
 	return dec, nil
 }
 
+// 创建网站备份
 func (this *Client) SiteBackup(id int64) (RespMSG, error) {
 	data := map[string][]string{
 		"id": {strconv.FormatInt(id, 10)},
@@ -296,6 +316,7 @@ func (this *Client) SiteBackup(id int64) (RespMSG, error) {
 	return dec, nil
 }
 
+// 删除网站备份
 func (this *Client) DeleteSiteBackup(id int64) (RespMSG, error) {
 	data := map[string][]string{
 		"id": {strconv.FormatInt(id, 10)},
@@ -308,6 +329,7 @@ func (this *Client) DeleteSiteBackup(id int64) (RespMSG, error) {
 	return dec, nil
 }
 
+// 获取网站域名列表
 func (this *Client) GetSiteDomains(search int64) (SiteDomains, error) {
 	data := map[string][]string{
 		"search": {strconv.FormatInt(search, 10)},
@@ -324,6 +346,7 @@ func (this *Client) GetSiteDomains(search int64) (SiteDomains, error) {
 	return dec, nil
 }
 
+// 网站添加域名
 func (this *Client) AddDomain(id int64, webname string, domain string) (RespMSG, error) {
 	data := map[string][]string{
 		"id":      {strconv.FormatInt(id, 10)},
@@ -338,6 +361,7 @@ func (this *Client) AddDomain(id int64, webname string, domain string) (RespMSG,
 	return dec, nil
 }
 
+// 网站删除域名
 func (this *Client) DelDomain(id int64, webname string, domain string, port int64) (RespMSG, error) {
 	data := map[string][]string{
 		"id":      {strconv.FormatInt(id, 10)},
@@ -353,6 +377,7 @@ func (this *Client) DelDomain(id int64, webname string, domain string, port int6
 	return dec, nil
 }
 
+// 获取网站可选伪静态列表
 func (this *Client) GetRewriteList(siteName string) (RewriteList, error) {
 	data := map[string][]string{
 		"siteName": {siteName},
@@ -364,6 +389,207 @@ func (this *Client) GetRewriteList(siteName string) (RewriteList, error) {
 	var dec RewriteList
 	if err := json.Unmarshal(resp, &dec); err != nil {
 		return RewriteList{}, err
+	}
+	return dec, nil
+}
+
+// 获取文件
+func (this *Client) GetFile(path string) (RespGetFile, error) {
+	data := map[string][]string{
+		"path": {path},
+	}
+	resp, status := this.btAPI(data, "/files?action=GetFileBody")
+	if status >= 400 {
+		return RespGetFile{}, errors.New(string(resp))
+	}
+	var dec RespGetFile
+	if err := json.Unmarshal(resp, &dec); err != nil {
+		return RespGetFile{}, err
+	}
+	return dec, nil
+}
+
+// 修改文件（无法新建文件）
+func (this *Client) SetFile(path string, body string) (RespMSG, error) {
+	data := map[string][]string{
+		"path":     {path},
+		"data":     {body},
+		"encoding": {"utf-8"},
+	}
+	resp, _ := this.btAPI(data, "/files?action=SaveFileBody")
+	var dec RespMSG
+	if err := json.Unmarshal(resp, &dec); err != nil {
+		return RespMSG{}, err
+	}
+	return dec, nil
+}
+
+// 取回防跨站配置/运行目录/日志开关状态/可设置的运行目录列表/密码访问状态
+func (this *Client) GetDirUserINI(id int64, path string) (RespUserINI, error) {
+	data := map[string][]string{
+		"id":   {strconv.FormatInt(id, 10)},
+		"path": {path},
+	}
+	resp, status := this.btAPI(data, "/site?action=GetDirUserINI")
+	if status >= 400 {
+		return RespUserINI{}, errors.New(string(resp))
+	}
+	var dec RespUserINI
+	if err := json.Unmarshal(resp, &dec); err != nil {
+		return RespUserINI{}, err
+	}
+	return dec, nil
+}
+
+// 设置防跨站状态（自动取反）
+func (this *Client) SetDirUserINI(path string) (RespMSG, error) {
+	data := map[string][]string{
+		"path": {path},
+	}
+	resp, _ := this.btAPI(data, "/site?action=SetDirUserINI")
+	var dec RespMSG
+	if err := json.Unmarshal(resp, &dec); err != nil {
+		return RespMSG{}, err
+	}
+	return dec, nil
+}
+
+// 设置是否写访问日志
+func (this *Client) SetLogsOpen(id int64) (RespMSG, error) {
+	data := map[string][]string{
+		"id": {strconv.FormatInt(id, 10)},
+	}
+	resp, _ := this.btAPI(data, "/site?action=logsOpen")
+	var dec RespMSG
+	if err := json.Unmarshal(resp, &dec); err != nil {
+		return RespMSG{}, err
+	}
+	return dec, nil
+}
+
+// 修改网站根目录
+func (this *Client) SetPath(id int64, path string) (RespMSG, error) {
+	data := map[string][]string{
+		"id":   {strconv.FormatInt(id, 10)},
+		"path": {path},
+	}
+	resp, _ := this.btAPI(data, "/site?action=SetPath")
+	var dec RespMSG
+	if err := json.Unmarshal(resp, &dec); err != nil {
+		return RespMSG{}, err
+	}
+	return dec, nil
+}
+
+// 修改网站运行目录 path 填相对目录 比如 "/public"
+func (this *Client) SetRunPath(id int64, path string) (RespMSG, error) {
+	data := map[string][]string{
+		"id":      {strconv.FormatInt(id, 10)},
+		"runPath": {path},
+	}
+	resp, _ := this.btAPI(data, "/site?action=SetSiteRunPath")
+	var dec RespMSG
+	if err := json.Unmarshal(resp, &dec); err != nil {
+		return RespMSG{}, err
+	}
+	return dec, nil
+}
+
+// 打开并设置网站密码访问
+func (this *Client) SetHasPwd(id int64, user string, pwd string) (RespMSG, error) {
+	data := map[string][]string{
+		"id":       {strconv.FormatInt(id, 10)},
+		"username": {user},
+		"password": {pwd},
+	}
+	resp, _ := this.btAPI(data, "/site?action=SetHasPwd")
+	var dec RespMSG
+	if err := json.Unmarshal(resp, &dec); err != nil {
+		return RespMSG{}, err
+	}
+	return dec, nil
+}
+
+// 关闭网站密码访问
+func (this *Client) CloseHasPwd(id int64) (RespMSG, error) {
+	data := map[string][]string{
+		"id": {strconv.FormatInt(id, 10)},
+	}
+	resp, _ := this.btAPI(data, "/site?action=CloseHasPwd")
+	var dec RespMSG
+	if err := json.Unmarshal(resp, &dec); err != nil {
+		return RespMSG{}, err
+	}
+	return dec, nil
+}
+
+// 获取流量限制相关配置（仅支持 nginx）
+func (this *Client) GetLimitNet(id int64) (RespLimitNet, error) {
+	data := map[string][]string{
+		"id": {strconv.FormatInt(id, 10)},
+	}
+	resp, status := this.btAPI(data, "/site?action=GetLimitNet")
+	if status >= 400 {
+		return RespLimitNet{}, errors.New(string(resp))
+	}
+	var dec RespLimitNet
+	if err := json.Unmarshal(resp, &dec); err != nil {
+		return RespLimitNet{}, err
+	}
+	return dec, nil
+}
+
+// 开启或保存流量限制配置（仅支持 nginx）
+func (this *Client) SetLimitNet(id int64, perServer int64, perIP int64, limitRate int64) (RespMSG, error) {
+	data := map[string][]string{
+		"id":         {strconv.FormatInt(id, 10)},
+		"perserver":  {strconv.FormatInt(perServer, 10)},
+		"perip":      {strconv.FormatInt(perIP, 10)},
+		"limit_rate": {strconv.FormatInt(limitRate, 10)},
+	}
+	resp, _ := this.btAPI(data, "/site?action=SetLimitNet")
+	var dec RespMSG
+	if err := json.Unmarshal(resp, &dec); err != nil {
+		return RespMSG{}, err
+	}
+	return dec, nil
+}
+
+// 关闭流量限制
+func (this *Client) CloseLimitNet(id int64) (RespMSG, error) {
+	data := map[string][]string{
+		"id": {strconv.FormatInt(id, 10)},
+	}
+	resp, _ := this.btAPI(data, "/site?action=CloseLimitNet")
+	var dec RespMSG
+	if err := json.Unmarshal(resp, &dec); err != nil {
+		return RespMSG{}, err
+	}
+	return dec, nil
+}
+
+// 取默认文档信息
+func (this *Client) GetIndex(id int64) (string, error) {
+	data := map[string][]string{
+		"id": {strconv.FormatInt(id, 10)},
+	}
+	resp, status := this.btAPI(data, "/site?action=GetIndex")
+	if status >= 400 {
+		return "", errors.New("cant get index: " + string(resp) + strconv.Itoa(status))
+	}
+	return string(resp), nil
+}
+
+// 设置默认文档 ep. Index : "index.php,index.html,index.htm,default.php,default.htm,default.html"
+func (this *Client) SetIndex(id int64, Index string) (RespMSG, error) {
+	data := map[string][]string{
+		"id":    {strconv.FormatInt(id, 10)},
+		"Index": {Index},
+	}
+	resp, _ := this.btAPI(data, "/site?action=SetIndex")
+	var dec RespMSG
+	if err := json.Unmarshal(resp, &dec); err != nil {
+		return RespMSG{}, err
 	}
 	return dec, nil
 }

@@ -149,3 +149,25 @@ type SiteDomains []struct {
 type RewriteList struct {
 	Rewrites []string `json:"rewrite"`
 }
+
+type RespGetFile struct {
+	Status   bool   `json:"status"`
+	Data     string `json:"data"`
+	Encoding string `json:"encoding"`
+}
+
+type RespUserINI struct {
+	Pass    bool `json:"pass"`
+	Logs    bool `json:"logs"`
+	Userini bool `json:"userini"`
+	RunPath struct {
+		Dirs    []string `json:"dirs"`
+		RunPath string   `json:"runPath"`
+	} `json:"runPath"`
+}
+
+type RespLimitNet struct {
+	LimitRate int `json:"limit_rate"`
+	Perserver int `json:"perserver"`
+	Perip     int `json:"perip"`
+}

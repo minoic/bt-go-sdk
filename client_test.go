@@ -14,16 +14,10 @@ func init() {
 }
 
 func Test(t *testing.T) {
-	r1, _ := client.GetSites(&ReqSites{
-		Limit: 15,
-	})
-	fmt.Println(r1)
-	r, _ := client.GetSiteBackups(&ReqSiteBackups{
-		Limit:  15,
-		Type:   0,
-		Search: 4,
-	})
-	fmt.Println(r)
+	r1, _ := client.Raw(map[string][]string{
+		"id": {"24"},
+	}, "/site?action=GetIndex")
+	fmt.Println(string(r1))
 }
 
 func TestClient_GetNetWork(t *testing.T) {
@@ -227,6 +221,125 @@ func TestClient_DeleteSite(t *testing.T) {
 		Database: true,
 		Path:     true,
 	})
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+	fmt.Println(r2)
+}
+
+func TestClient_GetFile(t *testing.T) {
+	r2, err := client.GetFile("/www/wwwroot/w1.hao.com/index.html")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+	fmt.Println(r2)
+}
+
+func TestClient_SetFile(t *testing.T) {
+	r2, err := client.SetFile("/www/wwwroot/w1.hao.com/404.html", "new body")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+	fmt.Println(r2)
+}
+
+// 取回防跨站配置/运行目录/日志开关状态/可设置的运行目录列表/密码访问状态
+// URI 地址：/site?action=GetDirUserINI
+func TestClient_GetDirUserINI(t *testing.T) {
+	r2, err := client.GetDirUserINI(11, "/www/wwwroot/w1.hao.com")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+	fmt.Println(r2)
+}
+
+func TestClient_SetDirUserINI(t *testing.T) {
+	r2, err := client.SetDirUserINI("/www/wwwroot/w1.hao.com")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+	fmt.Println(r2)
+}
+
+func TestClient_SetLogsOpen(t *testing.T) {
+	r2, err := client.SetLogsOpen(11)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+	fmt.Println(r2)
+}
+
+func TestClient_SetPath(t *testing.T) {
+	r2, err := client.SetPath(11, "/www/wwwroot/w1.hao.com")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+	fmt.Println(r2)
+}
+
+func TestClient_SetRunPath(t *testing.T) {
+	r2, err := client.SetRunPath(11, "/wwpppp")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+	fmt.Println(r2)
+}
+
+func TestClient_SetHasPwd(t *testing.T) {
+	r2, err := client.SetHasPwd(11, "wwpppp", "sss")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+	fmt.Println(r2)
+}
+
+func TestClient_CloseHasPwd(t *testing.T) {
+	r2, err := client.CloseHasPwd(11)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+	fmt.Println(r2)
+}
+
+func TestClient_SetLimitNet(t *testing.T) {
+	r2, err := client.SetLimitNet(24, 300, 25, 512)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+	fmt.Println(r2)
+}
+
+func TestClient_CloseLimitNet(t *testing.T) {
+	r2, err := client.CloseLimitNet(24)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+	fmt.Println(r2)
+}
+
+func TestClient_GetIndex(t *testing.T) {
+	r2, err := client.GetIndex(24)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+	fmt.Println(r2)
+}
+
+func TestClient_SetIndex(t *testing.T) {
+	r2, err := client.SetIndex(11, "index.php")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
