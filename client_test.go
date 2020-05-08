@@ -8,6 +8,7 @@ import (
 var client *Client
 
 // 运行全部测试时请先填写对应信息
+// 提供所有成员函数调用示例
 
 func init() {
 	client = NewClient("http://10.0.0.14:8888", "qviqWLiiUB623bfzJqQ37OGUEXwOXtVN")

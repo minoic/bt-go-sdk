@@ -1,6 +1,7 @@
 package bt_go_sdk
 
 /*
+ *定义返回的 json 解析到目标结构体 由 json-to-go 自动生成
  相应结构详见本目录的 api-doc.pdf
  或 https://www.bt.cn/api-doc.pdf
  对应功能若有不同则以本目录文档为准
@@ -146,10 +147,12 @@ type SiteDomains []struct {
 	Name    string `json:"name"`
 }
 
+// 伪静态可用列表
 type RewriteList struct {
 	Rewrites []string `json:"rewrite"`
 }
 
+// 获取指定文件
 type RespGetFile struct {
 	Status   bool   `json:"status"`
 	Data     string `json:"data"`
@@ -166,6 +169,7 @@ type RespUserINI struct {
 	} `json:"runPath"`
 }
 
+// 获取网络限制
 type RespLimitNet struct {
 	LimitRate int `json:"limit_rate"`
 	Perserver int `json:"perserver"`

@@ -13,12 +13,14 @@ import (
 	"time"
 )
 
+// 每个 Client 对象对应一个宝塔面板 先实例化再调用接口
 type Client struct {
-	BTAddress string
-	BTKey     string
-	cookies   []*http.Cookie
+	BTAddress string         // 目标宝塔面板地址
+	BTKey     string         // API Key 还需要添加 IP 白名单
+	cookies   []*http.Cookie // 根据文档建议保存每次返回的 cookies 来提高效率
 }
 
+// 填入两个参数来实例化 Client 对象
 func NewClient(address string, key string) *Client {
 	return &Client{
 		BTAddress: address,
@@ -31,7 +33,6 @@ func (this *Client) btAPI(data map[string][]string, endpoint string) ([]byte, in
 	if err != nil {
 		panic(err)
 	}
-	// fmt.Println(this.cookies)
 	nowTime := string(time.Now().Unix())
 	requestToken, requestTime := crypt.Md5(nowTime+crypt.Md5(this.BTKey)), nowTime
 	body := url.Values{
@@ -56,12 +57,14 @@ func (this *Client) btAPI(data map[string][]string, endpoint string) ([]byte, in
 	if resp.StatusCode >= 400 {
 		fmt.Println(resp.StatusCode, requestURL.String())
 	}
+	// 保存每次返回的 cookies
 	this.cookies = resp.Cookies()
 	respBody, _ := ioutil.ReadAll(resp.Body)
 	return respBody, resp.StatusCode
 }
 
 // Deprecated: Used only for debug
+// 执行无封装 API 调用
 func (this *Client) Raw(data map[string][]string, endpoint string) ([]byte, int) {
 	return this.btAPI(data, endpoint)
 }
