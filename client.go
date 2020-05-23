@@ -1,10 +1,11 @@
 package bt_go_sdk
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/ehang-io/nps/lib/crypt"
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
@@ -34,7 +35,7 @@ func (this *Client) btAPI(data map[string][]string, endpoint string) ([]byte, in
 		panic(err)
 	}
 	nowTime := string(time.Now().Unix())
-	requestToken, requestTime := crypt.Md5(nowTime+crypt.Md5(this.BTKey)), nowTime
+	requestToken, requestTime := MD5(nowTime+MD5(this.BTKey)), nowTime
 	body := url.Values{
 		"request_token": {requestToken},
 		"request_time":  {requestTime},
@@ -595,4 +596,11 @@ func (this *Client) SetIndex(id int64, Index string) (RespMSG, error) {
 		return RespMSG{}, err
 	}
 	return dec, nil
+}
+
+// Generate 32-bit MD5 strings
+func MD5(s string) string {
+	h := md5.New()
+	h.Write([]byte(s))
+	return hex.EncodeToString(h.Sum(nil))
 }
