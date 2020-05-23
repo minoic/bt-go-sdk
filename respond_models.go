@@ -11,49 +11,49 @@ package bt_go_sdk
 // URI 地址：/system?action=GetNetWork
 type NetWork struct {
 	Load struct {
-		Max     int     `json:"max"`
-		Safe    float64 `json:"safe"`
-		One     float64 `json:"one"`
-		Five    float64 `json:"five"`
-		Limit   int     `json:"limit"`
-		Fifteen float64 `json:"fifteen"`
-	} `json:"load"`
-	Down      float64 `json:"down"`
-	DownTotal int64   `json:"downTotal"`
-	Version   string  `json:"version"`
+		Max     int     `json:"max"`     // 最高值
+		Safe    float64 `json:"safe"`    // 安全值
+		One     float64 `json:"one"`     // 1 分钟
+		Five    float64 `json:"five"`    // 5 分钟
+		Limit   int     `json:"limit"`   // 限制
+		Fifteen float64 `json:"fifteen"` // 10 分钟
+	} `json:"load"`                      // 负载实时信息
+	Down      float64 `json:"down"`      // 下行流量 （KB）
+	DownTotal int64   `json:"downTotal"` // 总接收 （Byte）
+	Version   string  `json:"version"`   // 面板版本
 	Mem       struct {
-		MemFree     int `json:"memFree"`
-		MemTotal    int `json:"memTotal"`
-		MemCached   int `json:"memCached"`
-		MemBuffers  int `json:"memBuffers"`
-		MemRealUsed int `json:"memRealUsed"`
-	} `json:"mem"`
-	Up        float64 `json:"up"`
-	UpTotal   int64   `json:"upTotal"`
-	UpPackets int     `json:"upPackets"`
+		MemFree     int `json:"memFree"`     // 可用内存（MB）
+		MemTotal    int `json:"memTotal"`    // 总共内存（MB）
+		MemCached   int `json:"memCached"`   // 缓存化内存（MB）
+		MemBuffers  int `json:"memBuffers"`  // 系统缓冲（MB）
+		MemRealUsed int `json:"memRealUsed"` // 实际使用内存（MB）
+	} `json:"mem"`                       // 内存实时信息
+	Up        float64 `json:"up"`        // 上行流量（KB）
+	UpTotal   int64   `json:"upTotal"`   // 总发送 （Byte）
+	UpPackets int     `json:"upPackets"` // 总发包 （个）
 	Disk      []struct {
-		Path   string   `json:"path"`
-		Inodes []string `json:"inodes"`
-		Size   []string `json:"size"`
-	} `json:"disk"`
-	DownPackets int       `json:"downPackets"`
-	CPU         []float64 `json:"cpu"`
+		Path   string   `json:"path"`   // 挂载点
+		Inodes []string `json:"inodes"` // Inode使用信息 数组同下
+		Size   []string `json:"size"`   // 0-总共（GB） 1-已用（GB） 2-可用（GB） 3-使用率（百分比 带%）
+	} `json:"disk"`                            // 磁盘
+	DownPackets int       `json:"downPackets"` // 总收包（个）
+	CPU         []float64 `json:"cpu"`         // 0-总体使用率 1-核心数 2-[0-CPU0 1-CPU1]使用率 3-CPU型号 4-
 }
 
 // 获取系统基础统计
 // URI 地址：/system?action=GetSystemTotal
 type SystemTotal struct {
-	CPURealUsed float64 `json:"cpuRealUsed"`
-	MemTotal    int     `json:"memTotal"`
-	System      string  `json:"system"`
-	MemRealUsed int     `json:"memRealUsed"`
-	CPUNum      int     `json:"cpuNum"`
-	MemFree     int     `json:"memFree"`
-	Version     string  `json:"version"`
-	Time        string  `json:"time"`
-	MemCached   int     `json:"memCached"`
-	MemBuffers  int     `json:"memBuffers"`
-	Isuser      int     `json:"isuser"`
+	CPURealUsed float64 `json:"cpuRealUsed"` // cpu使用率（百分比）
+	MemTotal    int     `json:"memTotal"`    // 物理内存容量（MB）
+	System      string  `json:"system"`      // 操作系统信息
+	MemRealUsed int     `json:"memRealUsed"` // 物已使用的物理内存 （MB）
+	CPUNum      int     `json:"cpuNum"`      // CPU 核心数
+	MemFree     int     `json:"memFree"`     // 可用物理内存
+	Version     string  `json:"version"`     // 面板版本
+	Time        string  `json:"time"`        // 上次开机到现在的运行时间
+	MemCached   int     `json:"memCached"`   // 缓存化的内存
+	MemBuffers  int     `json:"memBuffers"`  // 系统缓冲 （MB）
+	Isuser      int     `json:"isuser"`      // ？
 }
 
 // 获取磁盘分区信息

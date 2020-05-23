@@ -16,7 +16,7 @@ import (
 
 // 每个 Client 对象对应一个宝塔面板 先实例化再调用接口
 type Client struct {
-	BTAddress string         // 目标宝塔面板地址
+	BTAddress string         // 目标宝塔面板地址 eg.http://10.0.0.14:8888 结尾不要有斜杠
 	BTKey     string         // API Key 还需要添加 IP 白名单
 	cookies   []*http.Cookie // 根据文档建议保存每次返回的 cookies 来提高效率
 }
