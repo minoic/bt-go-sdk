@@ -19,14 +19,19 @@ type Client struct {
 	BTAddress string         // 目标宝塔面板地址 eg.http://10.0.0.14:8888 结尾不要有斜杠
 	BTKey     string         // API Key 还需要添加 IP 白名单
 	cookies   []*http.Cookie // 根据文档建议保存每次返回的 cookies 来提高效率
+	Timeout   time.Duration
 }
 
 // 填入两个参数来实例化 Client 对象
-func NewClient(address string, key string) *Client {
-	return &Client{
+func NewClient(address string, key string, timeout ...time.Duration) *Client {
+	ret := &Client{
 		BTAddress: address,
 		BTKey:     key,
 	}
+	if len(timeout) > 0 && timeout[0] != 0 {
+		ret.Timeout = timeout[0]
+	}
+	return ret
 }
 
 func (this *Client) btAPI(data map[string][]string, endpoint string) ([]byte, int) {
@@ -47,7 +52,10 @@ func (this *Client) btAPI(data map[string][]string, endpoint string) ([]byte, in
 	if err != nil {
 		panic(err)
 	}
-	client := &http.Client{Jar: jar}
+	client := &http.Client{
+		Jar:     jar,
+		Timeout: this.Timeout,
+	}
 	if len(this.cookies) != 0 {
 		client.Jar.SetCookies(requestURL, this.cookies)
 	}

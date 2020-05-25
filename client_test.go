@@ -3,6 +3,7 @@ package bt_go_sdk
 import (
 	"fmt"
 	"testing"
+	"time"
 )
 
 var client *Client
@@ -11,7 +12,7 @@ var client *Client
 // 提供所有成员函数调用示例
 
 func init() {
-	client = NewClient("http://10.0.0.14:8888", "qviqWLiiUB623bfzJqQ37OGUEXwOXtVN")
+	client = NewClient("http://10.0.0.14:8888", "qviqWLiiUB623bfzJqQ37OGUEXwOXtVN", 10*time.Second)
 }
 
 func Test(t *testing.T) {
