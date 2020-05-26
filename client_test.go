@@ -12,7 +12,7 @@ var client *Client
 // 提供所有成员函数调用示例
 
 func init() {
-	client = NewClient("http://10.0.0.14:8888", "qviqWLiiUB623bfzJqQ37OGUEXwOXtVN", 10*time.Second)
+	client = NewClient("http://10.0.0.14:8888", "qviqWLiiUB623bfzJqQ37OGUEXwOXtVN", 1*time.Second)
 }
 
 func Test(t *testing.T) {
@@ -23,8 +23,8 @@ func Test(t *testing.T) {
 }
 
 func TestClient_GetNetWork(t *testing.T) {
-	r, _ := client.GetNetWork()
-	fmt.Println(r)
+	r, err := client.GetNetWork()
+	fmt.Println("return:", r, err)
 }
 
 func TestClient_GetSystemTotal(t *testing.T) {

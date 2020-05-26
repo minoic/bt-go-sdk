@@ -62,6 +62,7 @@ func (this *Client) btAPI(data map[string][]string, endpoint string) ([]byte, in
 	resp, err := client.PostForm(requestURL.String(), body)
 	if err != nil {
 		fmt.Println(err)
+		return []byte(err.Error()), 502
 	}
 	if resp.StatusCode >= 400 {
 		fmt.Println(resp.StatusCode, requestURL.String())
