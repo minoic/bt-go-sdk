@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
@@ -34,7 +33,7 @@ func NewClient(address string, key string, timeout ...time.Duration) *Client {
 	return ret
 }
 
-func (this *Client) btAPI(data map[string][]string, endpoint string) ([]byte, int) {
+func (this *Client) btAPI(data map[string][]string, endpoint string) ([]byte, error) {
 	requestURL, err := url.Parse(this.BTAddress + endpoint)
 	if err != nil {
 		panic(err)
@@ -61,29 +60,31 @@ func (this *Client) btAPI(data map[string][]string, endpoint string) ([]byte, in
 	}
 	resp, err := client.PostForm(requestURL.String(), body)
 	if err != nil {
-		fmt.Println(err)
-		return []byte(err.Error()), 502
+		return []byte{}, err
 	}
 	if resp.StatusCode >= 400 {
-		fmt.Println(resp.StatusCode, requestURL.String())
+		return []byte{}, errors.New(resp.Status)
 	}
 	// 保存每次返回的 cookies
 	this.cookies = resp.Cookies()
-	respBody, _ := ioutil.ReadAll(resp.Body)
-	return respBody, resp.StatusCode
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return []byte{}, err
+	}
+	return respBody, nil
 }
 
 // Deprecated: Used only for debug
 // 执行无封装 API 调用
-func (this *Client) Raw(data map[string][]string, endpoint string) ([]byte, int) {
+func (this *Client) Raw(data map[string][]string, endpoint string) ([]byte, error) {
 	return this.btAPI(data, endpoint)
 }
 
 // 获取实时状态信息(CPU、内存、网络、负载)
 func (this *Client) GetNetWork() (NetWork, error) {
-	resp, status := this.btAPI(map[string][]string{}, "/system?action=GetNetWork")
-	if status >= 400 {
-		return NetWork{}, errors.New(string(resp))
+	resp, err := this.btAPI(map[string][]string{}, "/system?action=GetNetWork")
+	if err != nil {
+		return NetWork{}, err
 	}
 	var dec NetWork
 	if err := json.Unmarshal(resp, &dec); err != nil {
@@ -94,9 +95,9 @@ func (this *Client) GetNetWork() (NetWork, error) {
 
 // 获取系统基础统计
 func (this *Client) GetSystemTotal() (SystemTotal, error) {
-	resp, status := this.btAPI(map[string][]string{}, "/system?action=GetSystemTotal")
-	if status >= 400 {
-		return SystemTotal{}, errors.New(string(resp))
+	resp, err := this.btAPI(map[string][]string{}, "/system?action=GetSystemTotal")
+	if err != nil {
+		return SystemTotal{}, err
 	}
 	var dec SystemTotal
 	if err := json.Unmarshal(resp, &dec); err != nil {
@@ -107,9 +108,9 @@ func (this *Client) GetSystemTotal() (SystemTotal, error) {
 
 // 获取磁盘分区信息
 func (this *Client) GetDiskInfo() (DiskInfo, error) {
-	resp, status := this.btAPI(map[string][]string{}, "/system?action=GetDiskInfo")
-	if status >= 400 {
-		return DiskInfo{}, errors.New(string(resp))
+	resp, err := this.btAPI(map[string][]string{}, "/system?action=GetDiskInfo")
+	if err != nil {
+		return DiskInfo{}, err
 	}
 	var dec DiskInfo
 	if err := json.Unmarshal(resp, &dec); err != nil {
@@ -120,8 +121,8 @@ func (this *Client) GetDiskInfo() (DiskInfo, error) {
 
 // 检查是否有安装任务
 func (this *Client) GetTaskCount() int {
-	resp, status := this.btAPI(map[string][]string{}, "/ajax?action=GetTaskCount")
-	if status >= 400 {
+	resp, err := this.btAPI(map[string][]string{}, "/ajax?action=GetTaskCount")
+	if err != nil {
 		return 0
 	}
 	dec, err := strconv.Atoi(string(resp))
@@ -133,9 +134,9 @@ func (this *Client) GetTaskCount() int {
 
 // 获取已安装的 PHP 版本列表
 func (this *Client) GetPHPVersion() (PHPVersions, error) {
-	resp, status := this.btAPI(map[string][]string{}, "/site?action=GetPHPVersion")
-	if status >= 400 {
-		return PHPVersions{}, errors.New(string(resp))
+	resp, err := this.btAPI(map[string][]string{}, "/site?action=GetPHPVersion")
+	if err != nil {
+		return PHPVersions{}, err
 	}
 	var dec PHPVersions
 	if err := json.Unmarshal(resp, &dec); err != nil {
@@ -150,9 +151,9 @@ func (this *Client) GetUpdateStatus(check bool, force bool) (UpdateStatus, error
 		"check": {strconv.FormatBool(check)},
 		"force": {strconv.FormatBool(force)},
 	}
-	resp, status := this.btAPI(data, "/ajax?action=UpdatePanel")
-	if status >= 400 {
-		return UpdateStatus{}, errors.New(string(resp))
+	resp, err := this.btAPI(data, "/ajax?action=UpdatePanel")
+	if err != nil {
+		return UpdateStatus{}, err
 	}
 	var dec UpdateStatus
 	if err := json.Unmarshal(resp, &dec); err != nil {
@@ -171,9 +172,9 @@ func (this *Client) GetSites(params *ReqSites) (RespSites, error) {
 		"tojs":   {params.ToJS},
 		"search": {params.Search},
 	}
-	resp, status := this.btAPI(data, "/data?action=getData&table=sites")
-	if status >= 400 {
-		return RespSites{}, errors.New(string(resp))
+	resp, err := this.btAPI(data, "/data?action=getData&table=sites")
+	if err != nil {
+		return RespSites{}, err
 	}
 	var dec RespSites
 	if err := json.Unmarshal(resp, &dec); err != nil {
@@ -205,9 +206,9 @@ func (this *Client) AddSite(params *ReqAddSite) (RespAddSite, error) {
 		"datauser":     {params.DataUser},
 		"datapassword": {params.DataPassword},
 	}
-	resp, status := this.btAPI(data, "/site?action=AddSite")
-	if status >= 400 {
-		return RespAddSite{}, errors.New(string(resp))
+	resp, err := this.btAPI(data, "/site?action=AddSite")
+	if err != nil {
+		return RespAddSite{}, err
 	}
 	var dec RespAddSite
 	if err := json.Unmarshal(resp, &dec); err != nil {
@@ -304,10 +305,10 @@ func (this *Client) GetSiteBackups(params *ReqSiteBackups) (RespSiteBackups, err
 		"tojs":   {params.ToJS},
 		"search": {strconv.FormatInt(params.Search, 10)},
 	}
-	resp, status := this.btAPI(data, "/data?action=getData&table=backup")
+	resp, err := this.btAPI(data, "/data?action=getData&table=backup")
 	// fmt.Println(string(resp))
-	if status >= 400 {
-		return RespSiteBackups{}, errors.New(string(resp))
+	if err != nil {
+		return RespSiteBackups{}, err
 	}
 	var dec RespSiteBackups
 	if err := json.Unmarshal(resp, &dec); err != nil {
@@ -348,9 +349,9 @@ func (this *Client) GetSiteDomains(search int64) (SiteDomains, error) {
 		"search": {strconv.FormatInt(search, 10)},
 		"list":   {"true"},
 	}
-	resp, status := this.btAPI(data, "/data?action=getData&table=domain")
-	if status >= 400 {
-		return SiteDomains{}, errors.New(string(resp))
+	resp, err := this.btAPI(data, "/data?action=getData&table=domain")
+	if err != nil {
+		return SiteDomains{}, err
 	}
 	var dec SiteDomains
 	if err := json.Unmarshal(resp, &dec); err != nil {
@@ -395,9 +396,9 @@ func (this *Client) GetRewriteList(siteName string) (RewriteList, error) {
 	data := map[string][]string{
 		"siteName": {siteName},
 	}
-	resp, status := this.btAPI(data, "/site?action=GetRewriteList")
-	if status >= 400 {
-		return RewriteList{}, errors.New(string(resp))
+	resp, err := this.btAPI(data, "/site?action=GetRewriteList")
+	if err != nil {
+		return RewriteList{}, err
 	}
 	var dec RewriteList
 	if err := json.Unmarshal(resp, &dec); err != nil {
@@ -411,9 +412,9 @@ func (this *Client) GetFile(path string) (RespGetFile, error) {
 	data := map[string][]string{
 		"path": {path},
 	}
-	resp, status := this.btAPI(data, "/files?action=GetFileBody")
-	if status >= 400 {
-		return RespGetFile{}, errors.New(string(resp))
+	resp, err := this.btAPI(data, "/files?action=GetFileBody")
+	if err != nil {
+		return RespGetFile{}, err
 	}
 	var dec RespGetFile
 	if err := json.Unmarshal(resp, &dec); err != nil {
@@ -443,9 +444,9 @@ func (this *Client) GetDirUserINI(id int64, path string) (RespUserINI, error) {
 		"id":   {strconv.FormatInt(id, 10)},
 		"path": {path},
 	}
-	resp, status := this.btAPI(data, "/site?action=GetDirUserINI")
-	if status >= 400 {
-		return RespUserINI{}, errors.New(string(resp))
+	resp, err := this.btAPI(data, "/site?action=GetDirUserINI")
+	if err != nil {
+		return RespUserINI{}, err
 	}
 	var dec RespUserINI
 	if err := json.Unmarshal(resp, &dec); err != nil {
@@ -541,8 +542,8 @@ func (this *Client) GetLimitNet(id int64) (RespLimitNet, error) {
 	data := map[string][]string{
 		"id": {strconv.FormatInt(id, 10)},
 	}
-	resp, status := this.btAPI(data, "/site?action=GetLimitNet")
-	if status >= 400 {
+	resp, err := this.btAPI(data, "/site?action=GetLimitNet")
+	if err != nil {
 		return RespLimitNet{}, errors.New(string(resp))
 	}
 	var dec RespLimitNet
@@ -586,9 +587,9 @@ func (this *Client) GetIndex(id int64) (string, error) {
 	data := map[string][]string{
 		"id": {strconv.FormatInt(id, 10)},
 	}
-	resp, status := this.btAPI(data, "/site?action=GetIndex")
-	if status >= 400 {
-		return "", errors.New("cant get index: " + string(resp) + strconv.Itoa(status))
+	resp, err := this.btAPI(data, "/site?action=GetIndex")
+	if err != nil {
+		return "", err
 	}
 	return string(resp), nil
 }
