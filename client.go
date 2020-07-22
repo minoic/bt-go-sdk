@@ -3,8 +3,8 @@ package bt_go_sdk
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"encoding/json"
 	"errors"
+	jsoniter "github.com/json-iterator/go"
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
@@ -12,6 +12,8 @@ import (
 	"strconv"
 	"time"
 )
+
+var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // 每个 Client 对象对应一个宝塔面板 先实例化再调用接口
 type Client struct {
@@ -38,7 +40,7 @@ func (this *Client) btAPI(data map[string][]string, endpoint string) ([]byte, er
 	if err != nil {
 		panic(err)
 	}
-	nowTime := string(time.Now().Unix())
+	nowTime := strconv.FormatInt(time.Now().Unix(), 10)
 	requestToken, requestTime := MD5(nowTime+MD5(this.BTKey)), nowTime
 	body := url.Values{
 		"request_token": {requestToken},
@@ -60,16 +62,16 @@ func (this *Client) btAPI(data map[string][]string, endpoint string) ([]byte, er
 	}
 	resp, err := client.PostForm(requestURL.String(), body)
 	if err != nil {
-		return []byte{}, err
+		return nil, err
 	}
 	if resp.StatusCode >= 400 {
-		return []byte{}, errors.New(resp.Status)
+		return nil, errors.New(resp.Status)
 	}
 	// 保存每次返回的 cookies
 	this.cookies = resp.Cookies()
 	respBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return []byte{}, err
+		return nil, err
 	}
 	return respBody, nil
 }

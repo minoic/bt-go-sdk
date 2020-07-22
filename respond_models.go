@@ -35,9 +35,9 @@ type NetWork struct {
 		Path   string   `json:"path"`   // 挂载点
 		Inodes []string `json:"inodes"` // Inode使用信息 数组同下
 		Size   []string `json:"size"`   // 0-总共（GB） 1-已用（GB） 2-可用（GB） 3-使用率（百分比 带%）
-	} `json:"disk"`                            // 磁盘
-	DownPackets int       `json:"downPackets"` // 总收包（个）
-	CPU         []float64 `json:"cpu"`         // 0-总体使用率 1-核心数 2-[0-CPU0 1-CPU1]使用率 3-CPU型号
+	} `json:"disk"`                                // 磁盘
+	DownPackets int           `json:"downPackets"` // 总收包（个）
+	CPU         []interface{} `json:"cpu"`         // 0-总体使用率 1-核心数 2-[0-CPU0 1-CPU1]使用率 3-CPU型号
 }
 
 // 获取系统基础统计
