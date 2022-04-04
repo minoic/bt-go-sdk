@@ -6,7 +6,7 @@ package bt_go_sdk
  省略项默认填为默认值或空 推荐多填
 */
 
-// 获取网站列表
+// ReqSites 获取网站列表
 // URI 地址：/data?action=getData&table=sites
 type ReqSites struct {
 	P      int64
@@ -17,7 +17,7 @@ type ReqSites struct {
 	Search string
 }
 
-// 创建网站
+// ReqAddSite 创建网站
 // URI 地址：/site?action=AddSite
 type ReqAddSite struct {
 	WebName struct {
@@ -40,7 +40,7 @@ type ReqAddSite struct {
 	DataPassword string // SQL 为 true 时 必填
 }
 
-// 删除网站
+// ReqDeleteSite 删除网站
 // URI 地址：/site?action=DeleteSite
 type ReqDeleteSite struct {
 	ID       int64  // 必填
@@ -50,7 +50,7 @@ type ReqDeleteSite struct {
 	Path     bool
 }
 
-// 获取网站备份列表
+// ReqSiteBackups 获取网站备份列表
 // URI 地址：/data?action=getData&table=backup
 type ReqSiteBackups struct {
 	P      int64

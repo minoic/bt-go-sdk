@@ -10,11 +10,11 @@
 ## 使用：
 
 ```go
-package main 
+package main
 
-import "github.com/MinoIC/bt-go-sdk"
+import "github.com/minoic/bt-go-sdk"
 
-func main(){ 
+func main() {
 	c:=bt_go_sdk.NewClient("http://localhost:8888","qviqWLiiUB623bfzJqQ37OGUEXwOXtVN")
 	ret,err:=c.GetNetWork()
 	if err != nil {

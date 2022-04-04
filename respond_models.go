@@ -7,7 +7,7 @@ package bt_go_sdk
  对应功能若有不同则以本目录文档为准
 */
 
-// 获取实时状态信息(CPU、内存、网络、负载)
+// NetWork 获取实时状态信息(CPU、内存、网络、负载)
 // URI 地址：/system?action=GetNetWork
 type NetWork struct {
 	Load struct {
@@ -17,7 +17,7 @@ type NetWork struct {
 		Five    float64 `json:"five"`    // 5 分钟
 		Limit   int     `json:"limit"`   // 限制
 		Fifteen float64 `json:"fifteen"` // 10 分钟
-	} `json:"load"`                      // 负载实时信息
+	} `json:"load"` // 负载实时信息
 	Down      float64 `json:"down"`      // 下行流量 （KB）
 	DownTotal int64   `json:"downTotal"` // 总接收 （Byte）
 	Version   string  `json:"version"`   // 面板版本
@@ -27,7 +27,7 @@ type NetWork struct {
 		MemCached   int `json:"memCached"`   // 缓存化内存（MB）
 		MemBuffers  int `json:"memBuffers"`  // 系统缓冲（MB）
 		MemRealUsed int `json:"memRealUsed"` // 实际使用内存（MB）
-	} `json:"mem"`                       // 内存实时信息
+	} `json:"mem"` // 内存实时信息
 	Up        float64 `json:"up"`        // 上行流量（KB）
 	UpTotal   int64   `json:"upTotal"`   // 总发送 （Byte）
 	UpPackets int     `json:"upPackets"` // 总发包 （个）
@@ -35,12 +35,12 @@ type NetWork struct {
 		Path   string   `json:"path"`   // 挂载点
 		Inodes []string `json:"inodes"` // Inode使用信息 数组同下
 		Size   []string `json:"size"`   // 0-总共（GB） 1-已用（GB） 2-可用（GB） 3-使用率（百分比 带%）
-	} `json:"disk"`                                // 磁盘
+	} `json:"disk"` // 磁盘
 	DownPackets int           `json:"downPackets"` // 总收包（个）
 	CPU         []interface{} `json:"cpu"`         // 0-总体使用率 1-核心数 2-[0-CPU0 1-CPU1]使用率 3-CPU型号
 }
 
-// 获取系统基础统计
+// SystemTotal 获取系统基础统计
 // URI 地址：/system?action=GetSystemTotal
 type SystemTotal struct {
 	CPURealUsed float64 `json:"cpuRealUsed"` // cpu使用率（百分比）
@@ -56,7 +56,7 @@ type SystemTotal struct {
 	Isuser      int     `json:"isuser"`      // ？
 }
 
-// 获取磁盘分区信息
+// DiskInfo 获取磁盘分区信息
 // URI 地址：/system?action=GetDiskInfo
 type DiskInfo []struct {
 	Path   string   `json:"path"`
@@ -64,7 +64,7 @@ type DiskInfo []struct {
 	Size   []string `json:"size"`
 }
 
-// 检查面板更新
+// UpdateStatus 检查面板更新
 // URI 地址：/ajax?action=UpdatePanel
 type UpdateStatus struct {
 	Status    bool   `json:"status"`
@@ -72,7 +72,7 @@ type UpdateStatus struct {
 	UpdateMsg string `json:"updateMsg"`
 }
 
-// 获取网站列表
+// RespSites 获取网站列表
 // URI 地址：/data?action=getData&table=sites
 type RespSites struct {
 	Data []struct {
@@ -90,21 +90,21 @@ type RespSites struct {
 	Page  string `json:"page"`
 }
 
-// 获取网站分类
+// SiteTypes 获取网站分类
 // URI 地址：/site?action=get_site_types
 type SiteTypes []struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
-// 获取已安装的 PHP 版本列表
+// PHPVersions 获取已安装的 PHP 版本列表
 // URI 地址：/site?action=GetPHPVersion
 type PHPVersions []struct {
 	Version string `json:"version"`
 	Name    string `json:"name"`
 }
 
-// 创建网站
+// RespAddSite 创建网站
 // URI 地址：/site?action=AddSite
 type RespAddSite struct {
 	FtpStatus      bool   `json:"ftpStatus"`
@@ -116,13 +116,13 @@ type RespAddSite struct {
 	FtpPass        string `json:"ftpPass"`
 }
 
-// 通用消息结构
+// RespMSG 通用消息结构
 type RespMSG struct {
 	Status bool   `json:"status"`
 	Msg    string `json:"msg"`
 }
 
-// 获取网站备份列表
+// RespSiteBackups 获取网站备份列表
 // URI 地址：/data?action=getData&table=backup
 type RespSiteBackups struct {
 	Data []struct {
@@ -137,7 +137,7 @@ type RespSiteBackups struct {
 	Page  string `json:"page"`
 }
 
-// 获取网站的域名列表
+// SiteDomains 获取网站的域名列表
 // URI 地址：/data?action=getData&table=domain
 type SiteDomains []struct {
 	Port    int    `json:"port"`
@@ -147,12 +147,12 @@ type SiteDomains []struct {
 	Name    string `json:"name"`
 }
 
-// 伪静态可用列表
+// RewriteList 伪静态可用列表
 type RewriteList struct {
 	Rewrites []string `json:"rewrite"`
 }
 
-// 获取指定文件
+// RespGetFile 获取指定文件
 type RespGetFile struct {
 	Status   bool   `json:"status"`
 	Data     string `json:"data"`
@@ -169,7 +169,7 @@ type RespUserINI struct {
 	} `json:"runPath"`
 }
 
-// 获取网络限制
+// RespLimitNet 获取网络限制
 type RespLimitNet struct {
 	LimitRate int `json:"limit_rate"`
 	Perserver int `json:"perserver"`
